@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 interface Role {
   id: string;
@@ -49,9 +50,7 @@ export default function CreateTeamPage() {
   const toggleRole = (roleId: string) => {
     setSelectedRoles((prev) => {
       const exists = prev.find((r) => r.role_id === roleId);
-      if (exists) {
-        return prev.filter((r) => r.role_id !== roleId);
-      }
+      if (exists) return prev.filter((r) => r.role_id !== roleId);
       return [...prev, { role_id: roleId, slots: 1 }];
     });
   };
@@ -77,13 +76,9 @@ export default function CreateTeamPage() {
       return;
     }
 
-    // Create the team
     const { data: team, error: teamError } = await supabase
       .from("teams")
-      .insert({
-        ...form,
-        owner_id: user.id,
-      })
+      .insert({ ...form, owner_id: user.id })
       .select()
       .single();
 
@@ -93,18 +88,15 @@ export default function CreateTeamPage() {
       return;
     }
 
-    // Add selected roles
     if (selectedRoles.length > 0) {
       const teamRoles = selectedRoles.map((r) => ({
         team_id: team.id,
         role_id: r.role_id,
         slots: r.slots,
       }));
-
       const { error: rolesError } = await supabase
         .from("team_roles")
         .insert(teamRoles);
-
       if (rolesError) {
         setError(rolesError.message);
         setLoading(false);
@@ -118,27 +110,29 @@ export default function CreateTeamPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">
-          Create a New Team
-        </h1>
+      <main className="flex-1 page-container-narrow py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+            Create a New Team
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Fill in the details to publish your team listing
+          </p>
+        </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6 rounded-xl bg-white p-8 border border-gray-200 shadow-sm"
-        >
+        <form onSubmit={handleSubmit} className="card p-5 sm:p-8 space-y-6">
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+            <div
+              className="rounded-lg bg-red-50 border border-red-200 p-3.5 text-sm text-red-700"
+              role="alert"
+            >
               {error}
             </div>
           )}
 
           <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Team Name *
+            <label htmlFor="title" className="input-label">
+              Team Name <span className="text-red-500">*</span>
             </label>
             <input
               id="title"
@@ -146,17 +140,14 @@ export default function CreateTeamPage() {
               required
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="input"
               placeholder="e.g. AI Health Monitor"
             />
           </div>
 
           <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Description *
+            <label htmlFor="description" className="input-label">
+              Description <span className="text-red-500">*</span>
             </label>
             <textarea
               id="description"
@@ -166,74 +157,74 @@ export default function CreateTeamPage() {
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="input resize-none"
               placeholder="Describe your project, what you're building, and what kind of people you're looking for..."
             />
           </div>
 
-          <div>
-            <label
-              htmlFor="category"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Category *
-            </label>
-            <select
-              id="category"
-              required
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              <option value="">Select a category</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="category" className="input-label">
+                Category <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="category"
+                required
+                value={form.category}
+                onChange={(e) =>
+                  setForm({ ...form, category: e.target.value })
+                }
+                className="input"
+              >
+                <option value="">Select a category</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div>
-            <label
-              htmlFor="max_members"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Maximum Members
-            </label>
-            <input
-              id="max_members"
-              type="number"
-              min={2}
-              max={50}
-              value={form.max_members}
-              onChange={(e) =>
-                setForm({ ...form, max_members: parseInt(e.target.value) || 5 })
-              }
-              className="mt-1 block w-32 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            />
+            <div>
+              <label htmlFor="max_members" className="input-label">
+                Maximum Members
+              </label>
+              <input
+                id="max_members"
+                type="number"
+                min={2}
+                max={50}
+                value={form.max_members}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    max_members: parseInt(e.target.value) || 5,
+                  })
+                }
+                className="input"
+              />
+            </div>
           </div>
 
           {/* Roles Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Required Roles
-            </label>
+            <label className="input-label">Required Roles</label>
             <p className="text-xs text-gray-500 mb-3">
               Select roles you need and specify how many slots for each
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               {roles.map((role) => {
                 const selected = selectedRoles.find(
                   (r) => r.role_id === role.id
                 );
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={role.id}
-                    className={`rounded-lg border p-3 cursor-pointer transition-colors ${
+                    className={`rounded-lg border p-3 text-left transition-all ${
                       selected
-                        ? "border-indigo-500 bg-indigo-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500/20"
+                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                     }`}
                     onClick={() => toggleRole(role.id)}
                   >
@@ -253,36 +244,42 @@ export default function CreateTeamPage() {
                           value={selected.slots}
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) =>
-                            updateSlots(role.id, parseInt(e.target.value) || 1)
+                            updateSlots(
+                              role.id,
+                              parseInt(e.target.value) || 1
+                            )
                           }
-                          className="w-12 rounded border border-indigo-300 px-1 py-0.5 text-center text-xs"
+                          className="w-14 rounded-md border border-indigo-300 px-2 py-1 text-center text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          aria-label={`Slots for ${role.name}`}
                         />
                       )}
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-            >
-              {loading ? "Creating..." : "Create Team"}
-            </button>
+          {/* Actions */}
+          <div className="flex flex-col-reverse gap-3 pt-4 border-t border-gray-100 sm:flex-row">
             <button
               type="button"
               onClick={() => router.back()}
-              className="rounded-md bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              className="btn-secondary btn-md sm:w-auto"
             >
               Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary btn-md flex-1 sm:flex-none"
+            >
+              {loading ? "Creating..." : "Create Team"}
             </button>
           </div>
         </form>
       </main>
+      <Footer />
     </>
   );
 }

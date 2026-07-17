@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignUpPage() {
-  const router = useRouter();
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,12 +41,12 @@ export default function SignUpPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-md text-center">
-          <div className="rounded-xl bg-white p-8 shadow-sm border border-gray-200">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12">
+        <div className="w-full max-w-sm sm:max-w-md text-center">
+          <div className="card p-8 sm:p-10">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100">
               <svg
-                className="h-6 w-6 text-green-600"
+                className="h-7 w-7 text-emerald-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
@@ -61,18 +59,16 @@ export default function SignUpPage() {
                 />
               </svg>
             </div>
-            <h2 className="mt-4 text-xl font-bold text-gray-900">
+            <h2 className="mt-5 text-xl font-bold text-gray-900 sm:text-2xl">
               Check your email
             </h2>
-            <p className="mt-2 text-gray-600">
-              We&apos;ve sent a verification link to <strong>{email}</strong>.
-              Click the link to confirm your account.
+            <p className="mt-3 text-sm text-gray-600 sm:text-base">
+              We&apos;ve sent a verification link to{" "}
+              <strong className="text-gray-900">{email}</strong>. Click the link
+              to confirm your account.
             </p>
-            <Link
-              href="/login"
-              className="mt-6 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              Back to login
+            <Link href="/login" className="btn-primary btn-md mt-6 w-full">
+              Back to Login
             </Link>
           </div>
         </div>
@@ -81,71 +77,86 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-sm sm:max-w-md">
+        {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-indigo-600">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-2xl font-bold text-indigo-600 sm:text-3xl"
+          >
+            <svg
+              className="h-7 w-7"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
             TeamUp
           </Link>
-          <h2 className="mt-4 text-2xl font-bold text-gray-900">
+          <h1 className="mt-6 text-2xl font-bold text-gray-900 sm:text-3xl">
             Create your account
-          </h2>
-          <p className="mt-2 text-gray-600">Join TeamUp and start collaborating</p>
+          </h1>
+          <p className="mt-2 text-sm text-gray-600 sm:text-base">
+            Join TeamUp and start collaborating
+          </p>
         </div>
 
-        <form
-          onSubmit={handleSignUp}
-          className="rounded-xl bg-white p-8 shadow-sm border border-gray-200"
-        >
-          {error && (
-            <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="fullName"
-                className="block text-sm font-medium text-gray-700"
+        {/* Form Card */}
+        <div className="card p-6 sm:p-8">
+          <form onSubmit={handleSignUp} className="space-y-5">
+            {error && (
+              <div
+                className="rounded-lg bg-red-50 border border-red-200 p-3.5 text-sm text-red-700"
+                role="alert"
               >
-                Full Name
-              </label>
-              <input
-                id="fullName"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                placeholder="John Doe"
-              />
-            </div>
+                {error}
+              </div>
+            )}
 
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Username
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                placeholder="johndoe"
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="fullName" className="input-label">
+                  Full Name
+                </label>
+                <input
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                  autoComplete="name"
+                  className="input"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <label htmlFor="username" className="input-label">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  autoComplete="username"
+                  className="input"
+                  placeholder="johndoe"
+                />
+              </div>
             </div>
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
+              <label htmlFor="email" className="input-label">
+                Email address
               </label>
               <input
                 id="email"
@@ -153,16 +164,14 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                autoComplete="email"
+                className="input"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="input-label">
                 Password
               </label>
               <input
@@ -172,33 +181,34 @@ export default function SignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                autoComplete="new-password"
+                className="input"
                 placeholder="••••••••"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1.5 text-xs text-gray-500">
                 Must be at least 6 characters
               </p>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-6 w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-          >
-            {loading ? "Creating account..." : "Create Account"}
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary btn-md w-full"
+            >
+              {loading ? "Creating account..." : "Create Account"}
+            </button>
+          </form>
 
-          <p className="mt-4 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-gray-600">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+              className="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
             >
               Sign in
             </Link>
           </p>
-        </form>
+        </div>
       </div>
     </div>
   );

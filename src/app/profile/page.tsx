@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import type { Tables } from "@/lib/database.types";
 
 export default function ProfilePage() {
@@ -21,18 +22,15 @@ export default function ProfilePage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-
       if (!user) {
         router.push("/login");
         return;
       }
-
       const { data } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .single();
-
       if (data) setProfile(data);
       setLoading(false);
     };
@@ -42,7 +40,6 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile) return;
-
     setError("");
     setSuccess("");
     setSaving(true);
@@ -65,6 +62,7 @@ export default function ProfilePage() {
       setError(error.message);
     } else {
       setSuccess("Profile updated successfully!");
+      setTimeout(() => setSuccess(""), 3000);
     }
     setSaving(false);
   };
@@ -84,7 +82,9 @@ export default function ProfilePage() {
     }
   };
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file || !profile) return;
 
@@ -111,15 +111,19 @@ export default function ProfilePage() {
 
     setProfile({ ...profile, avatar_url: publicUrl });
     setSuccess("Avatar updated!");
+    setTimeout(() => setSuccess(""), 3000);
   };
 
   if (loading) {
     return (
       <>
         <Navbar />
-        <div className="flex items-center justify-center py-20">
-          <p className="text-gray-500">Loading profile...</p>
-        </div>
+        <main className="flex-1 flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="h-8 w-8 mx-auto animate-spin rounded-full border-2 border-gray-300 border-t-indigo-600" />
+            <p className="mt-3 text-sm text-gray-500">Loading profile...</p>
+          </div>
+        </main>
       </>
     );
   }
@@ -129,33 +133,36 @@ export default function ProfilePage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">
-          Edit Profile
-        </h1>
+      <main className="flex-1 page-container-narrow py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+            Edit Profile
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Update your personal information and social links
+          </p>
+        </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6 rounded-xl bg-white p-8 border border-gray-200 shadow-sm"
-        >
+        <form onSubmit={handleSubmit} className="card p-5 sm:p-8 space-y-6">
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+            <div
+              className="rounded-lg bg-red-50 border border-red-200 p-3.5 text-sm text-red-700"
+              role="alert"
+            >
               {error}
             </div>
           )}
           {success && (
-            <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
+            <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3.5 text-sm text-emerald-700">
               {success}
             </div>
           )}
 
           {/* Avatar */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Avatar
-            </label>
-            <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center text-xl font-bold text-indigo-600 overflow-hidden">
+            <label className="input-label">Avatar</label>
+            <div className="mt-1 flex items-center gap-4">
+              <div className="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center text-xl font-bold text-indigo-600 overflow-hidden flex-shrink-0 ring-2 ring-white shadow-sm">
                 {profile.avatar_url ? (
                   <img
                     src={profile.avatar_url}
@@ -168,21 +175,30 @@ export default function ProfilePage() {
                     .toUpperCase()
                 )}
               </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarUpload}
-                className="text-sm text-gray-600"
-              />
+              <div>
+                <label
+                  htmlFor="avatar-upload"
+                  className="btn-secondary btn-sm cursor-pointer"
+                >
+                  Change photo
+                </label>
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="sr-only"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  JPG, PNG up to 2MB
+                </p>
+              </div>
             </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label
-                htmlFor="full_name"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="full_name" className="input-label">
                 Full Name
               </label>
               <input
@@ -192,14 +208,11 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   setProfile({ ...profile, full_name: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="input"
               />
             </div>
             <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="username" className="input-label">
                 Username
               </label>
               <input
@@ -209,16 +222,13 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   setProfile({ ...profile, username: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="input"
               />
             </div>
           </div>
 
           <div>
-            <label
-              htmlFor="bio"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="bio" className="input-label">
               Bio
             </label>
             <textarea
@@ -228,16 +238,13 @@ export default function ProfilePage() {
               onChange={(e) =>
                 setProfile({ ...profile, bio: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="input resize-none"
               placeholder="Tell others about yourself..."
             />
           </div>
 
           <div>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="location" className="input-label">
               Location
             </label>
             <input
@@ -247,16 +254,14 @@ export default function ProfilePage() {
               onChange={(e) =>
                 setProfile({ ...profile, location: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="input"
               placeholder="City, Country"
             />
           </div>
 
           {/* Skills */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Skills
-            </label>
+            <label className="input-label">Skills</label>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -268,31 +273,44 @@ export default function ProfilePage() {
                     addSkill();
                   }
                 }}
-                placeholder="Add a skill..."
-                className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                placeholder="Type a skill and press Enter..."
+                className="input flex-1"
               />
               <button
                 type="button"
                 onClick={addSkill}
-                className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                className="btn-secondary btn-md flex-shrink-0"
               >
                 Add
               </button>
             </div>
             {profile.skills && profile.skills.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {profile.skills.map((skill, i) => (
                   <span
                     key={i}
-                    className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 pl-3 pr-1.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-600/10"
                   >
                     {skill}
                     <button
                       type="button"
                       onClick={() => removeSkill(i)}
-                      className="text-indigo-400 hover:text-indigo-600"
+                      className="rounded-full p-0.5 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-100 transition-colors"
+                      aria-label={`Remove ${skill}`}
                     >
-                      ×
+                      <svg
+                        className="h-3.5 w-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
                     </button>
                   </span>
                 ))}
@@ -301,14 +319,13 @@ export default function ProfilePage() {
           </div>
 
           {/* Social Links */}
-          <div className="space-y-4 border-t border-gray-100 pt-4">
-            <h3 className="text-sm font-medium text-gray-700">Social Links</h3>
+          <div className="space-y-4 border-t border-gray-100 pt-6">
+            <h3 className="text-sm font-semibold text-gray-900">
+              Social Links
+            </h3>
             <div>
-              <label
-                htmlFor="github_url"
-                className="block text-xs text-gray-500"
-              >
-                GitHub URL
+              <label htmlFor="github_url" className="input-label">
+                GitHub
               </label>
               <input
                 id="github_url"
@@ -317,16 +334,13 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   setProfile({ ...profile, github_url: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="input"
                 placeholder="https://github.com/username"
               />
             </div>
             <div>
-              <label
-                htmlFor="linkedin_url"
-                className="block text-xs text-gray-500"
-              >
-                LinkedIn URL
+              <label htmlFor="linkedin_url" className="input-label">
+                LinkedIn
               </label>
               <input
                 id="linkedin_url"
@@ -335,16 +349,13 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   setProfile({ ...profile, linkedin_url: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="input"
                 placeholder="https://linkedin.com/in/username"
               />
             </div>
             <div>
-              <label
-                htmlFor="portfolio_url"
-                className="block text-xs text-gray-500"
-              >
-                Portfolio URL
+              <label htmlFor="portfolio_url" className="input-label">
+                Portfolio
               </label>
               <input
                 id="portfolio_url"
@@ -353,21 +364,24 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   setProfile({ ...profile, portfolio_url: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="input"
                 placeholder="https://yourportfolio.com"
               />
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-          >
-            {saving ? "Saving..." : "Save Profile"}
-          </button>
+          <div className="pt-4 border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={saving}
+              className="btn-primary btn-md w-full sm:w-auto"
+            >
+              {saving ? "Saving..." : "Save Profile"}
+            </button>
+          </div>
         </form>
       </main>
+      <Footer />
     </>
   );
 }

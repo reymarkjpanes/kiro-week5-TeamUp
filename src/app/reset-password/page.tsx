@@ -34,29 +34,35 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-sm sm:max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-indigo-600">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-2xl font-bold text-indigo-600 sm:text-3xl"
+          >
             TeamUp
           </Link>
-          <h2 className="mt-4 text-2xl font-bold text-gray-900">
+          <h1 className="mt-6 text-2xl font-bold text-gray-900 sm:text-3xl">
             Set new password
-          </h2>
+          </h1>
+          <p className="mt-2 text-sm text-gray-600 sm:text-base">
+            Choose a strong password for your account
+          </p>
         </div>
 
-        <form
-          onSubmit={handleReset}
-          className="rounded-xl bg-white p-8 shadow-sm border border-gray-200"
-        >
-          {error && (
-            <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-          <div className="space-y-4">
+        <div className="card p-6 sm:p-8">
+          <form onSubmit={handleReset} className="space-y-5">
+            {error && (
+              <div
+                className="rounded-lg bg-red-50 border border-red-200 p-3.5 text-sm text-red-700"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="input-label">
                 New Password
               </label>
               <input
@@ -66,11 +72,12 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                autoComplete="new-password"
+                className="input"
               />
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="confirmPassword" className="input-label">
                 Confirm Password
               </label>
               <input
@@ -80,18 +87,19 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                autoComplete="new-password"
+                className="input"
               />
             </div>
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-6 w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-          >
-            {loading ? "Updating..." : "Update Password"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary btn-md w-full"
+            >
+              {loading ? "Updating..." : "Update Password"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -29,46 +29,61 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-sm sm:max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-indigo-600">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-2xl font-bold text-indigo-600 sm:text-3xl"
+          >
             TeamUp
           </Link>
-          <h2 className="mt-4 text-2xl font-bold text-gray-900">
+          <h1 className="mt-6 text-2xl font-bold text-gray-900 sm:text-3xl">
             Reset your password
-          </h2>
-          <p className="mt-2 text-gray-600">
+          </h1>
+          <p className="mt-2 text-sm text-gray-600 sm:text-base">
             Enter your email and we&apos;ll send you a reset link
           </p>
         </div>
 
-        <div className="rounded-xl bg-white p-8 shadow-sm border border-gray-200">
+        <div className="card p-6 sm:p-8">
           {success ? (
-            <div className="text-center">
-              <p className="text-green-700">
+            <div className="text-center py-4">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 mb-4">
+                <svg
+                  className="h-7 w-7 text-emerald-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+                  />
+                </svg>
+              </div>
+              <p className="text-sm text-gray-700 sm:text-base">
                 Check your email for a password reset link.
               </p>
-              <Link
-                href="/login"
-                className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Back to login
+              <Link href="/login" className="btn-primary btn-md mt-6 w-full">
+                Back to Login
               </Link>
             </div>
           ) : (
-            <form onSubmit={handleReset}>
+            <form onSubmit={handleReset} className="space-y-5">
               {error && (
-                <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
+                <div
+                  className="rounded-lg bg-red-50 border border-red-200 p-3.5 text-sm text-red-700"
+                  role="alert"
+                >
                   {error}
                 </div>
               )}
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Email
+                <label htmlFor="email" className="input-label">
+                  Email address
                 </label>
                 <input
                   id="email"
@@ -76,23 +91,24 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  autoComplete="email"
+                  className="input"
                   placeholder="you@example.com"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-6 w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                className="btn-primary btn-md w-full"
               >
                 {loading ? "Sending..." : "Send Reset Link"}
               </button>
-              <p className="mt-4 text-center text-sm text-gray-600">
+              <p className="text-center text-sm text-gray-600">
                 <Link
                   href="/login"
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                  className="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
                 >
-                  Back to login
+                  ← Back to login
                 </Link>
               </p>
             </form>

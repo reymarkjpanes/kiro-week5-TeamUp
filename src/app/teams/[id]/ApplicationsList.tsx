@@ -37,7 +37,6 @@ export default function ApplicationsList({ applications, teamId }: Props) {
   ) => {
     setLoading(applicationId);
 
-    // Update application status
     const { error } = await supabase
       .from("applications")
       .update({ status: action })
@@ -49,7 +48,6 @@ export default function ApplicationsList({ applications, teamId }: Props) {
       return;
     }
 
-    // If accepted, add to team_members
     if (action === "Accepted") {
       await supabase.from("team_members").insert({
         team_id: teamId,
@@ -65,9 +63,12 @@ export default function ApplicationsList({ applications, teamId }: Props) {
   const processedApps = applications.filter((a) => a.status !== "Pending");
 
   return (
-    <div className="rounded-xl bg-white border border-gray-200 p-6 shadow-sm">
+    <div className="card p-5 sm:p-6">
       <h2 className="text-lg font-semibold text-gray-900">
-        Applications ({pendingApps.length} pending)
+        Applications{" "}
+        {pendingApps.length > 0 && (
+          <span className="badge-yellow ml-2">{pendingApps.length} pending</span>
+        )}
       </h2>
 
       {pendingApps.length > 0 ? (
@@ -77,8 +78,8 @@ export default function ApplicationsList({ applications, teamId }: Props) {
               key={app.id}
               className="rounded-lg border border-gray-200 p-4"
             >
-              <div className="flex items-start justify-between">
-                <div>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
                   <p className="font-medium text-gray-900">
                     {app.profiles?.full_name || app.profiles?.username}
                   </p>
@@ -86,24 +87,21 @@ export default function ApplicationsList({ applications, teamId }: Props) {
                     @{app.profiles?.username}
                   </p>
                   {app.profiles?.skills && app.profiles.skills.length > 0 && (
-                    <div className="mt-1 flex flex-wrap gap-1">
+                    <div className="mt-2 flex flex-wrap gap-1">
                       {app.profiles.skills.slice(0, 5).map((skill) => (
-                        <span
-                          key={skill}
-                          className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600"
-                        >
+                        <span key={skill} className="badge-gray text-[10px]">
                           {skill}
                         </span>
                       ))}
                     </div>
                   )}
                 </div>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-400 flex-shrink-0">
                   {new Date(app.created_at!).toLocaleDateString()}
                 </span>
               </div>
               {app.message && (
-                <p className="mt-3 text-sm text-gray-700 bg-gray-50 rounded p-3">
+                <p className="mt-3 text-sm text-gray-700 bg-gray-50 rounded-lg p-3 italic">
                   &ldquo;{app.message}&rdquo;
                 </p>
               )}
@@ -113,7 +111,7 @@ export default function ApplicationsList({ applications, teamId }: Props) {
                     handleAction(app.id, app.user_id, "Accepted")
                   }
                   disabled={loading === app.id}
-                  className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                  className="btn bg-emerald-600 text-white hover:bg-emerald-700 btn-sm"
                 >
                   Accept
                 </button>
@@ -122,7 +120,7 @@ export default function ApplicationsList({ applications, teamId }: Props) {
                     handleAction(app.id, app.user_id, "Rejected")
                   }
                   disabled={loading === app.id}
-                  className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                  className="btn bg-red-600 text-white hover:bg-red-700 btn-sm"
                 >
                   Reject
                 </button>
@@ -142,18 +140,18 @@ export default function ApplicationsList({ applications, teamId }: Props) {
             {processedApps.map((app) => (
               <div
                 key={app.id}
-                className="flex items-center justify-between text-sm"
+                className="flex items-center justify-between text-sm py-1"
               >
-                <span className="text-gray-700">
+                <span className="text-gray-700 truncate">
                   {app.profiles?.full_name || app.profiles?.username}
                 </span>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                  className={`flex-shrink-0 ${
                     app.status === "Accepted"
-                      ? "bg-green-100 text-green-700"
+                      ? "badge-green"
                       : app.status === "Rejected"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-gray-100 text-gray-700"
+                      ? "badge-red"
+                      : "badge-gray"
                   }`}
                 >
                   {app.status}

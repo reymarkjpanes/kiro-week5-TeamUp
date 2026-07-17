@@ -33,35 +33,53 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-sm sm:max-w-md">
+        {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-indigo-600">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-2xl font-bold text-indigo-600 sm:text-3xl"
+          >
+            <svg
+              className="h-7 w-7"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
             TeamUp
           </Link>
-          <h2 className="mt-4 text-2xl font-bold text-gray-900">
+          <h1 className="mt-6 text-2xl font-bold text-gray-900 sm:text-3xl">
             Welcome back
-          </h2>
-          <p className="mt-2 text-gray-600">Sign in to your account</p>
+          </h1>
+          <p className="mt-2 text-sm text-gray-600 sm:text-base">
+            Sign in to your account
+          </p>
         </div>
 
-        <form
-          onSubmit={handleLogin}
-          className="rounded-xl bg-white p-8 shadow-sm border border-gray-200"
-        >
-          {error && (
-            <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+        {/* Form Card */}
+        <div className="card p-6 sm:p-8">
+          <form onSubmit={handleLogin} className="space-y-5">
+            {error && (
+              <div
+                className="rounded-lg bg-red-50 border border-red-200 p-3.5 text-sm text-red-700"
+                role="alert"
               >
-                Email
+                {error}
+              </div>
+            )}
+
+            <div>
+              <label htmlFor="email" className="input-label">
+                Email address
               </label>
               <input
                 id="email"
@@ -69,16 +87,14 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                autoComplete="email"
+                className="input"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="input-label">
                 Password
               </label>
               <input
@@ -87,39 +103,40 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                autoComplete="current-password"
+                className="input"
                 placeholder="••••••••"
               />
             </div>
-          </div>
 
-          <div className="mt-4 text-right">
-            <Link
-              href="/forgot-password"
-              className="text-sm text-indigo-600 hover:text-indigo-500"
+            <div className="flex items-center justify-end">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary btn-md w-full"
             >
-              Forgot password?
-            </Link>
-          </div>
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-6 w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-
-          <p className="mt-4 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-gray-600">
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+              className="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
             >
-              Sign up
+              Create one
             </Link>
           </p>
-        </form>
+        </div>
       </div>
     </div>
   );
